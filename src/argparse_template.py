@@ -1,10 +1,19 @@
 import sys
-import argparse
 
-def main(argv):
-    print(argv)
+ARGS = dict()
+
+def main():
+    print(ARGS)
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input', type=str, required=True,
+                        help='input dir path')
+    parser.add_argument('--output', type=str, required=True,
+                        help='output dir path')
+    ARGS = parser.parse_args()
+    main()
 
