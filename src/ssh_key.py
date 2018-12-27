@@ -1,0 +1,1 @@
+OPENWRT_SSH_PASSWD = ''
