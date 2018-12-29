@@ -16,6 +16,18 @@ class VAPMCollectorPcap(VAPMInterface):
 
 
 if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--tmp_path',
+                        help='tmp file location',
+                        type=str,
+                        required=True)
+    parser.add_argument('--router_ip',
+                        help='ip address of home router',
+                        type=str,
+                        required=True)
+                        
     vapm_pcap = VAPMCollectorPcap('/tmp/pcap/router.pcap',
                                   '192.168.1.1')
     vapm_pcap.start_collect('./temp.pcap')
