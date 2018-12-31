@@ -2,6 +2,7 @@ import subprocess
 
 from vapm_collector_interface import VAPMInterface
 
+ARGS = None
 
 class VAPMCollectorPcap(VAPMInterface):
     def __init__(self, tmp_path, router_ip):
@@ -27,8 +28,12 @@ if __name__ == '__main__':
                         help='ip address of home router',
                         type=str,
                         required=True)
+    parser.add_argument('--output',
+                        help='output file path',
+                        type=str,
+                        required=True)
+    ARGS = parser.parse_args()
                         
-    vapm_pcap = VAPMCollectorPcap('/tmp/pcap/router.pcap',
-                                  '192.168.1.1')
-    vapm_pcap.start_collect('./temp.pcap')
+    vapm_pcap = VAPMCollectorPcap(ARGS.tmp_path,ARGS.router_ip)
+    vapm_pcap.start_collect(ARGS.output)
 
