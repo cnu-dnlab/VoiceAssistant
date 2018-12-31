@@ -20,15 +20,15 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--tmp_path',
+    parser.add_argument('-t', '--tmp-path',
                         help='tmp file location',
                         type=str,
                         required=True)
-    parser.add_argument('--router_ip',
+    parser.add_argument('-r', '--router-ip',
                         help='ip address of home router',
                         type=str,
                         required=True)
-    parser.add_argument('--output',
+    parser.add_argument('-o', '--output',
                         help='output file path',
                         type=str,
                         required=True)
