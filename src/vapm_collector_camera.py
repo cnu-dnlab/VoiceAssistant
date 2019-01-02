@@ -5,7 +5,7 @@ import subprocess
 from vapm_collector_interface import VAPMInterface
 
 class VAPMCollectorCamera(VAPMInterface):
-    def __init__(self, tmp_path, camera_number):
+    def __init__(self, tmp_path, camera_number=0):
         super().__init__(tmp_path)
         self.capture = cv2.VideoCapture(camera_number)
         self.frame_size = [640, 480]
@@ -16,8 +16,8 @@ class VAPMCollectorCamera(VAPMInterface):
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         
     def _do_collect(self):
-        self.video = cv2.VideoWriter(self.tmp_filepath, self.fourcc, 30.0,\
-                         (self.frame_size[0], self.frame_size[1]))
+        self.video = cv2.VideoWriter(self.tmp_filepath, self.fourcc, 30.0, \
+                                    (self.frame_size[0], self.frame_size[1]))
         while True:
             ret, frame = self.capture.read()
             # show frame to display
@@ -30,5 +30,23 @@ class VAPMCollectorCamera(VAPMInterface):
         cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    vapm_camera = VAPMCollectorCamera('./tmp/camera/webcam.mp4', 0)
-    vapm_camera.start_collect('./temp.mp4')
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-t', '--tmp-path',
+                        help='tmp file location',
+                        type=str,
+                        required=True)
+    parser.add_argument('-d', '--device',
+                        help='device number of connected camera',
+                        type=int,
+                        default=0,
+                        required=True)
+    parser.add_argument('-o', '--output',
+                        help='output file path',
+                        type=str,
+                        required=True)
+    ARGS = parser.parse_args()
+
+    vapm_camera = VAPMCollectorCamera(ARGS.tmp_path, ARGS.device)
+    vapm_camera.start_collect(ARGS.output)
