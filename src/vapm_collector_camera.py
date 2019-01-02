@@ -15,16 +15,15 @@ class VAPMCollectorCamera(VAPMInterface):
         # select codec
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         
-    def _do_collect(self):
+    def _do_collect(self):  # override
         self.video = cv2.VideoWriter(self.tmp_filepath, self.fourcc, 30.0, \
                                     (self.frame_size[0], self.frame_size[1]))
         while True:
             ret, frame = self.capture.read()
-            # show frame to display
-            cv2.imshow("VideoFrame", frame)
             self.video.write(frame)
-            # if press any key, break
-            if cv2.waitKey(1) > 0: break
+        self._stop_collect()
+
+    def _stop_collect(self):  # override
         self.video.release()
         self.capture.release()
         cv2.destroyAllWindows()
@@ -40,12 +39,11 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--device',
                         help='device number of connected camera',
                         type=int,
-                        default=0,
-                        required=True)
+                        default=0)
     parser.add_argument('-o', '--output',
                         help='output file path',
                         type=str,
-                        required=True)
+                        default='./temp.mp4')
     ARGS = parser.parse_args()
 
     vapm_camera = VAPMCollectorCamera(ARGS.tmp_path, ARGS.device)
