@@ -48,3 +48,4 @@ if __name__ == "__main__":
 
     vapm_camera = VAPMCollectorCamera(ARGS.tmp_path, ARGS.device)
     vapm_camera.start_collect(ARGS.output)
+
