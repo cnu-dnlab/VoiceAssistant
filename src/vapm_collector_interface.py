@@ -23,6 +23,7 @@ class VAPMInterface(object):
         try:
             self._do_collect()
         except KeyboardInterrupt:
+            self._stop_collect()
             self.archive_tmp(target)
         self.clear_tmp()
 
