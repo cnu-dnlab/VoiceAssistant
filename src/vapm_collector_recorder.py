@@ -62,3 +62,4 @@ if __name__ == '__main__':
                                           ARGS.device, ARGS.samplerate)
 
     vapm_recorder.start_collect(ARGS.output)
+
