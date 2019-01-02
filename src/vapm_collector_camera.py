@@ -1,11 +1,12 @@
-import datetime
-import cv2
 import subprocess
+
+import cv2
 
 from vapm_collector_interface import VAPMInterface
 
+
 class VAPMCollectorCamera(VAPMInterface):
-    def __init__(self, tmp_path, camera_number=0):
+    def __init__(self, tmp_path, camera_number):
         super().__init__(tmp_path)
         self.capture = cv2.VideoCapture(camera_number)
         self.frame_size = [640, 480]
@@ -28,6 +29,7 @@ class VAPMCollectorCamera(VAPMInterface):
         self.capture.release()
         cv2.destroyAllWindows()
 
+
 if __name__ == "__main__":
     import argparse
 
@@ -43,7 +45,7 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--output',
                         help='output file path',
                         type=str,
-                        default='./temp.mp4')
+                        required=True)
     ARGS = parser.parse_args()
 
     vapm_camera = VAPMCollectorCamera(ARGS.tmp_path, ARGS.device)
