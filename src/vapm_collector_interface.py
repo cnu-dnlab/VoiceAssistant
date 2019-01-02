@@ -28,3 +28,7 @@ class VAPMInterface(object):
 
     def _do_collect(self):
         raise NotImplementedError
+
+    def _stop_collect(self):
+        pass
+
