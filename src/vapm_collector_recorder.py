@@ -7,6 +7,7 @@ import soundfile as sf
 
 from vapm_collector_interface import VAPMInterface
 
+
 class VAPMCollectorRecorder(VAPMInterface):
     FILE_NAME = 'sound'
     EXTENSION_WAV = '.wav'
@@ -21,7 +22,6 @@ class VAPMCollectorRecorder(VAPMInterface):
         self.channel = channels
         self.device = device
         self.sample_rate = samplerate
-
 
     def callback(self, indata, frames, time, status):
         self.queue_for_store.put(indata.copy())
@@ -43,18 +43,26 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-t', '--tmp-path', type=str,
-                        default='./tmp/recorder/sound.wav',
-                        help='tmp file location')
-    parser.add_argument('-d', '--device', type=int, default=None,
-                        help='input device (number ID)')
-    parser.add_argument('-r', '--samplerate', type=int, default=44100,
-                        help='input sample rate for recording')
-    parser.add_argument('-c', '--channels', type=int, default=2,
-                        help='input channels')
-    parser.add_argument('-o', '--output', type=str,
-                        default='./temp.wav',
-                        help='ouput file path')
+    parser.add_argument('-t', '--tmp-path',
+                        help='tmp file location',
+                        type=str,
+                        default='./tmp/recorder/sound.wav')
+    parser.add_argument('-d', '--device',
+                        help='input device (number ID)',
+                        type=int,
+                        default=None)
+    parser.add_argument('-r', '--samplerate',
+                        help='input sample rate for recording',
+                        type=int,
+                        default=44100)
+    parser.add_argument('-c', '--channels',
+                        help='input channels',
+                        type=int,
+                        default=2)
+    parser.add_argument('-o', '--output',
+                        help='ouput file path',
+                        type=str,
+                        default='./temp.wav')
 
     ARGS = parser.parse_args()
 
@@ -62,4 +70,3 @@ if __name__ == '__main__':
                                           ARGS.device, ARGS.samplerate)
 
     vapm_recorder.start_collect(ARGS.output)
-
