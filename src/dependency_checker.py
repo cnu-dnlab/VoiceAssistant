@@ -4,23 +4,29 @@ import pkg_resources
 from pkg_resources import DistributionNotFound
 from pkg_resources import VersionConflict
 
-DEPENENCIES = ['SoundFile>=0.10.2',
-               'sounddevice>=0.3.0',
-               'opencv-python>=3.4.4.0',
-               'snvf']
 BINARIES = ["abc"]
 CHECK_MSG = " --help"
 
+def make_dependencies_list():
+    dependencies = list()
+    with open('requirements.txt') as require_file:
+        while True:
+            line = require_file.readline()
+            if not line:
+                break
+            line = line.replace('\n', '')
+            dependencies.append(line)
+    return dependencies
+
 def module_checker():
     not_installed_modules = []
-    for dependency in DEPENENCIES:
+    for dependency in make_dependencies_list():
         try:
             pkg_resources.require(dependency)
         except DistributionNotFound:
             not_installed_modules.append(dependency)
         except VersionConflict:
             not_installed_modules.append(dependency)
-
     return not_installed_modules
 
 def binary_checker():
