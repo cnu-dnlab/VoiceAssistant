@@ -1,16 +1,8 @@
 import os
 import sys
-import subprocess
+# TODO(LuHa): import multiprocessing or from multiprocessing import Pool
 
-ARGS = dict()
-
-
-def clear_tmp():
-    pass
-
-
-def archive_tmp():
-    pass
+ARGS = None
 
 
 def main():
@@ -19,5 +11,16 @@ def main():
 
 if __name__ == '__main__':
     import argparse
-    
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-t', '--tmp-dir',
+                        help='tmp file directory',
+                        type=str,
+                        required=True)
+    parser.add_argument('-o', '--output',
+                        help='output file directory',
+                        type=str,
+                        required=True)
+    ARGS = parser.parse_args()
     main()
+
