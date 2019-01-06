@@ -2,8 +2,7 @@ import subprocess
 import csv
 
 import pkg_resources
-from pkg_resources import DistributionNotFound
-from pkg_resources import VersionConflict
+
 
 def make_binary_list(binaries_file_path):
     binaries = list()
@@ -29,9 +28,9 @@ def module_checker(modules_file_path):
     for dependency in make_dependencies_list(modules_file_path):
         try:
             pkg_resources.require(dependency)
-        except DistributionNotFound:
+        except pkg_resources.DistributionNotFound:
             not_installed_modules.append(dependency)
-        except VersionConflict:
+        except pkg_resources.VersionConflict:
             not_installed_modules.append(dependency)
     return not_installed_modules
 
