@@ -14,21 +14,21 @@ def read_deps(file_path):
 
 def module_checker(file_path):
     not_installed = list()
-    for dependency in read_deps(file_path):
+    for dep in read_deps(file_path):
         try:
-            pkg_resources.require(dependency)
+            pkg_resources.require(dep)
         except pkg_resources.DistributionNotFound:
-            not_installed.append(dependency)
+            not_installed.append(dep)
         except pkg_resources.VersionConflict:
-            not_installed.append(dependency)
+            not_installed.append(dep)
     return not_installed
 
 def binary_checker(file_path):
     not_installed = list()
-    for binary in read_deps(file_path):
-        command = ' '.join(binary)
+    for dep in read_deps(file_path):
+        command = ' '.join(dep)
         exit_code = subprocess.getstatusoutput(command)
         if exit_code[0] != 0:
-            not_installed.append(binary)
+            not_installed.append(dep[0])
     return not_installed
 
