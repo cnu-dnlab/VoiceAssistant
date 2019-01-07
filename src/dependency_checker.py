@@ -30,3 +30,4 @@ def binary_checker(file_path):
         if exit_code[0] != 0:
             not_installed.append(dep[0])
     return not_installed
+
