@@ -108,3 +108,9 @@ venv.bak/
 
 # Mac os cache
 .DS_Store
+
+# temp data
+*.json
+*.mp3
+*.wav
+*.mp4
