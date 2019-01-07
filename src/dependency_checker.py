@@ -4,43 +4,31 @@ import csv
 import pkg_resources
 
 
-def make_binary_list(binaries_file_path):
-    binaries = list()
-    with open(binaries_file_path, 'r') as bin_list_file:
-        reader = csv.reader(bin_list_file, delimiter=',')
-        for _, row in enumerate(reader):
-            binaries.append(row)
-    return binaries
+def read_deps(file_path):
+    deps = list()
+    with open(filw_path, 'r') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            deps.append(row)
+    return deps
 
-def make_dependencies_list(modules_file_path):
-    dependencies = list()
-    with open(modules_file_path, 'r') as require_file:
-        while True:
-            line = require_file.readline()
-            if not line:
-                break
-            line = line.replace('\n', '')
-            dependencies.append(line)
-    return dependencies
-
-def module_checker(modules_file_path):
-    not_installed_modules = []
-    for dependency in make_dependencies_list(modules_file_path):
+def module_checker(file_path):
+    not_installed = list()
+    for dependency in read_deps(file_path):
         try:
             pkg_resources.require(dependency)
         except pkg_resources.DistributionNotFound:
-            not_installed_modules.append(dependency)
+            not_installed.append(dependency)
         except pkg_resources.VersionConflict:
-            not_installed_modules.append(dependency)
-    return not_installed_modules
+            not_installed.append(dependency)
+    return not_installed
 
-def binary_checker(binaries_file_path):
-    not_installed_binaries = []
-    binaries = make_binary_list(binaries_file_path)
-    for binary in binaries:
-        binary_check_msg = binary[0] +" "+binary[1]
-        exit_code = subprocess.getstatusoutput(binary_check_msg)
+def binary_checker(file_path):
+    not_installed = list()
+    for binary in read_deps(file_path):
+        command = ' '.join(binary)
+        exit_code = subprocess.getstatusoutput(command)
         if exit_code[0] != 0:
-            not_installed_binaries.append(binary)
-    return not_installed_binaries
+            not_installed.append(binary)
+    return not_installed
 
