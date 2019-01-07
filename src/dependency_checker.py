@@ -3,10 +3,9 @@ import csv
 
 import pkg_resources
 
-
 def read_deps(file_path):
     deps = list()
-    with open(filw_path, 'r') as f:
+    with open(file_path, 'r') as f:
         reader = csv.reader(f)
         for row in reader:
             deps.append(row)
@@ -31,4 +30,3 @@ def binary_checker(file_path):
         if exit_code[0] != 0:
             not_installed.append(dep[0])
     return not_installed
-
