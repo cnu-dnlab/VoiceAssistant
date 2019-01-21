@@ -1,36 +1,36 @@
 import os
-import sys
-from multiprocessing import Process
-
-from src.vapm_collector_pcap import VAPMCollectorPcap
-from src.vapm_collector_recorder import VAPMCollectorRecorder
-from src.vapm_collector_camera import VAPMCollectorCamera
+import subprocess
+import time
+import signal
 
 ARGS = None
 
 
 def main():
-    vapm_pcap = VAPMCollectorPcap(os.path.join(ARGS.tmp_dir, 'vapm.pcap'),
-                                  ARGS.router_ip)
-    vapm_recorder = VAPMCollectorRecorder(os.path.join(ARGS.tmp_dir, 'vapm.wav'),
-                                          2, None, 44100)
-    vapm_camera = VAPMCollectorCamera(os.path.join(ARGS.tmp_dir, 'vapm.mp4'),
-                                      0)
-    pcap_process = Process(target=vapm_pcap.start_collect, args=(os.path.join(ARGS.output, 'vapm.pcap'),))
-    recorder_process = Process(target=vapm_recorder.start_collect, args=(os.path.join(ARGS.output, 'vapm.wav'),))
-    camera_process = Process(target=vapm_camera.start_collect, args=(os.path.join(ARGS.output, 'vapm.mp4'),))
-    
+    pcap_process = subprocess.Popen('python3 ./src/vapm_collector_pcap.py -t {0} -r {1} -o {2}'.format(
+        os.path.join(ARGS.tmp_dir, 'vapm.pcap'),
+        ARGS.router_ip,
+        os.path.join(ARGS.output, 'vapm.pcap')).split(' '))
+    recorder_process = subprocess.Popen('python3 ./src/vapm_collector_recorder.py -t {0} -o {1}'.format(
+        os.path.join(ARGS.tmp_dir, 'vapm.wav'),
+        os.path.join(ARGS.output, 'vapm.wav')).split(' '))
+    camera_process = subprocess.Popen('python3 ./src/vapm_collector_camera.py -t {0} -o {1}'.format(
+        os.path.join(ARGS.tmp_dir, 'vapm.mp4'),
+        os.path.join(ARGS.output, 'vapm.mp4')).split(' '))
+
     try:
-        pcap_process.start()
-        recorder_process.start()
-        camera_process.start()
+        while True:
+            time.sleep(10)
+            print('Taking...')
     except KeyboardInterrupt:
-        pcap_process.terminate()
-        recorder_process.terminate()
-        camera_process.terminate()
+        print('Stop taking...')
+        pcap_process.send_signal(signal.SIGINT)
+        recorder_process.send_signal(signal.SIGINT)
+        camera_process.send_signal(signal.SIGINT)
 
 
 if __name__ == '__main__':
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     import argparse
 
     parser = argparse.ArgumentParser()
