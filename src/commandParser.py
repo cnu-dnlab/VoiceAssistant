@@ -6,10 +6,11 @@ from gtts import gTTS
 
 
 class CommandSpeeker():
-	def __init__(self, speeker):
-		self.json_file = open("./"+speeker+".json", "r")
-		self.speaker = json.load(self.json_file)
-		self.language = self.speaker['language']
+	def __init__(self, speaker, json_path):
+		self.speaker = speaker
+		self.json_file = open(json_path, "r")
+		self.command_json = json.load(self.json_file)
+		self.language = self.command_json['language']
 		self.tts = None
 		self.filename = "command.mp3"
 
@@ -19,11 +20,32 @@ class CommandSpeeker():
 		# if you don't install 'mpg123', should install by apt
 		os.system("mpg123 " + self.filename)
 	
-	def start_command(self, command, order_number):
-		self._play_command_to_mp3(self.speaker['call'])
+	def _do_command(self, category, command_number):
+		self._play_command_to_mp3(self.command_json['call'])
 		time.sleep(0.7)
-		self._play_command_to_mp3(self.speaker["command"][command][order_number])
+		self._play_command_to_mp3(self.command_json["command"][category][command_number])
 		self.json_file.close()
+	
+	def start_command(self, category, command_number, write_record):
+		start_time = time.time()
+		try:
+			self._do_command(category, command_number)
+			if write_record: time.sleep(60)
+		except KeyboardInterrupt:
+			duration = time.time() - start_time
+			if write_record: self._write_record(category, command_number, duration)
+			os.remove(self.filename)
+			self.json_file.close()
+	
+	def _write_record(self, category, command_number, duration):
+		record_file = './test_record.csv'
+		isfrist = True
+		if os.path.exists(record_file): isfrist = False
+		with open(record_file, 'a') as file:
+			if isfrist: file.write('speeker, category, command, time\n')
+			file.write(self.speaker+', '+category+', '+\
+				self.command_json['command'][category][command_number]+', '+\
+				str(duration)+'\n')
 
 
 if __name__=="__main__":
@@ -34,16 +56,26 @@ if __name__=="__main__":
 						help='voice assistance speeker type',
 						type=str,
 						required=True)
-	parser.add_argument('-c', '--command',
-						help='kind of command',
+	parser.add_argument('-j', '--json-path',
+						help='command json file path',
 						type=str,
 						required=True)
-	parser.add_argument('-o', '--order-number',
-						help='command to order',
+	parser.add_argument('-c', '--category',
+						help='kind of command category',
+						type=str,
+						required=True)
+	parser.add_argument('-n', '--command-number',
+						help='the number of command as json',
 						type=int,
 						default=0)
+	parser.add_argument('-w', '--write-record',
+						help='write test record',
+						type=bool,
+						default=False)
 	ARGS = parser.parse_args()
 
-	commandspeeker = CommandSpeeker(ARGS.speeker)
-	commandspeeker.start_command(ARGS.command, ARGS.order_number)
+	commandspeeker = CommandSpeeker(ARGS.speeker, ARGS.json_path)
+	commandspeeker.start_command(ARGS.category, 
+								ARGS.command_number,
+								ARGS.write_record)
 
