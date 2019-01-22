@@ -1,3 +1,4 @@
 sounddevice
-SoundFile
+soundfile
 opencv-python
+numpy
