@@ -1,0 +1,3 @@
+sounddevice
+SoundFile
+opencv-python
