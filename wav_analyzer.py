@@ -2,52 +2,83 @@ import os
 import soundfile as sf
 import numpy as np
 
+from src.wav_util import wav_normalize
+from src.file_util import get_files
+
 ARGS = None
 
 
-def get_files(path, ext='', recursive=False):
-    path_list = [path]
-    while len(path_list) > 0:
-        cpath = path_list.pop()
-        with os.scandir(cpath) as it:
-            for entry in it:
-                if not entry.name.startswith('.') and entry.is_file():
-                    if entry.name.endswith(ext):
-                        yield entry.path
-                    else:
-                        if recursive:
-                            path_list.append(entry.path)
+def is_talk(data, avg, std):
+    """
+    2-channel data
+    """
+    if abs(data[0] - avg)/std >= ARGS.zscore:
+        return True
+    else:
+        return False
+
+def binarization(data, fs):
+    values = list()
+    avg = np.mean(data[0:int(ARGS.buffer*fs)])
+    std = np.std(data[0:int(ARGS.buffer*fs)])
+    for i in range(0, len(data)):
+        values.append(is_talk(data[i], avg, std))
+
+    return values
 
 
 def get_timing(input_path):
+    # prepare data: preprocessing
     data, fs = sf.read(input_path, dtype='float32')
-    arg_list = list(np.argwhere(data>data.max()*0.5)[:,0]/44100)
-    arg_set = set()
-    for entry in arg_list:
-        time_float = '{0:.3f}'.format(entry)
-        arg_set.add(float(time_float))
-    time_list = list(arg_set)
-    time_list.sort()
-    btime = -1
-    time_result = list()
-    for entry in time_list:
-        if abs(btime - entry) < 0.1:
-            btime = entry
-            continue
-        else:
-            btime = entry
-            time_result.append(entry)
-    return time_result
+    nom_data = wav_normalize(data)
+    bin_data = binarization(nom_data, fs)
+    arg_data = np.argwhere(bin_data)/fs
 
+    # calculate timing
+    timing = [[arg_data[0, 0], arg_data[0, 0]]]
+    for value in arg_data[:, 0]:
+        if abs(timing[-1][1]-value) <= ARGS.space:
+            timing[-1][1] = value
+        else:
+            timing.append([value, value])
+
+    result = parse_timing(input_path, timing)
+
+    return result
+
+def parse_timing(filename, timing):
+    result = dict()
+    filename = filename.split('/')[-1]
+    if (filename.startswith('googlehome') or 
+        filename.startswith('alexa')):
+        result = {'callStart': timing[0][0],
+                  'callEnd': timing[0][1],
+                  'commandStart': timing[1][0],
+                  'commandEnd': timing[1][1],
+                  'actionStart': timing[2][0],
+                  'actionEnd': timing[2][1]}
+    else:
+        result = {'callStart': timing[0][0],
+                  'callEnd': timing[0][1],
+                  'commandStart': timing[2][0],
+                  'commandEnd': timing[2][1],
+                  'actionStart': timing[3][0],
+                  'actionEnd': timing[3][1]}
+
+    return result
 
 def main():
-    result = list()
+    print(('device,command,callStart,callEnd,commandStart,commandEnd,'
+           'actionStart,actionEnd'))
     for path in get_files(ARGS.input, ext='.wav'):
         timing = get_timing(path)
-        result.append((path, timing))
-    result.sort()
-    for key, value in result:
-        print('{0:>18s} {1}'.format(key[2:], value))
+        filename = path.split('/')[-1]
+        timing['device'] = filename.split('_')[0]
+        #device = filename.split('-')[0]
+        timing['command'] = filename
+        print(('{device},{command},{callStart},{callEnd},'
+               '{commandStart},{commandEnd},'
+               '{actionStart},{actionEnd}').format_map(timing))
 
 
 if __name__ == '__main__':
@@ -57,6 +88,18 @@ if __name__ == '__main__':
                         type=str,
                         required=True,
                         help='Input file')
+    parser.add_argument('-b', '--buffer',
+                        type=float,
+                        default=1.0,
+                        help='Buffer second for calculate z-score')
+    parser.add_argument('-z', '--zscore',
+                        type=float,
+                        default=4.0,
+                        help='Z-Score threshold')
+    parser.add_argument('-s', '--space',
+                        type=float,
+                        default=0.5,
+                        help='Time between commands')
     ARGS = parser.parse_args()
     main()
 
