@@ -15,6 +15,10 @@ class VAPMCollectorPcap(VAPMInterface):
                                                     self.tmp_filepath)
         self.popen = subprocess.run(command, shell=True)
 
+    def _stop_collect(self):  # override
+        command = 'ssh root@{0} "killall tcpdump"'.format(self.router_ip)
+        subprocess.run(command, shell=True)
+
 
 if __name__ == '__main__':
     import argparse
