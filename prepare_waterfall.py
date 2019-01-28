@@ -8,7 +8,7 @@ FIELDNAMES = ['key', 'callStart', 'callEnd', 'commandStart', 'commandEnd',
               'actionStart', 'actionEnd', 'domainLookupStart',
               'domainLookupEnd', 'connectStart', 'connectEnd',
               'secureConnectionStart', 'requestStart', 'responseStart',
-              'responseEnd']
+              'responseEnd', 'white']
 
 
 def get_wav_data(path):
@@ -28,6 +28,19 @@ def get_wav_data(path):
 
     return data
 
+def get_min(data):
+    result = float('inf')
+    for value in data.values():
+        try:
+            float_value = float(value)
+        except ValueError:
+            continue
+        if float_value != 0.0 and result > float_value:
+            result = float_value
+
+    return result
+
+
 def main():
     # create output directory
     os.makedirs(ARGS.output, exist_ok=True)
@@ -42,6 +55,7 @@ def main():
             writer.writeheader()
             key = filename.split('.')[0]
             try:
+                white = get_min(wav_data[key])
                 data = {'key': key, 
                         'callStart': wav_data[key]['callStart'], 
                         'callEnd': wav_data[key]['callEnd'], 
@@ -52,7 +66,8 @@ def main():
                         'domainLookupStart': 0, 'domainLookupEnd': 0, 
                         'connectStart': 0, 'connectEnd': 0,
                         'secureConnectionStart': 0, 'requestStart': 0, 
-                        'responseStart': 0, 'responseEnd': 0}
+                        'responseStart': 0, 'responseEnd': 0,
+                        'white': white}
             except KeyError:
                 print('Something not found', key)
                 continue
@@ -63,6 +78,8 @@ def main():
                     row.update({'callStart': 0, 'callEnd': 0,
                                 'commandStart': 0, 'commandEnd': 0,
                                 'actionStart': 0, 'actionEnd': 0})
+                    white = get_min(row)
+                    row['white'] = white
                     writer.writerow(row)
         print('Done: {0}'.format(path))
 
