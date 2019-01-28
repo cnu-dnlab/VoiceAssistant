@@ -183,6 +183,11 @@ class FlowTiming(object):
         for key in self.dns.keys():
             item = self.dns[key]
             for aname in item['aname']:
-                rdns[aname] = {'domainLookupStart': item['domainLookupStart'],
-                               'domainLookupEnd': item['domainLookupEnd']}
+                try:
+                    rdns[aname] = {
+                        'domainLookupStart': item['domainLookupStart'],
+                        'domainLookupEnd': item['domainLookupEnd']}
+                except KeyError:
+                    continue
+
         return rdns
