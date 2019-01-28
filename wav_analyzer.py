@@ -52,21 +52,27 @@ def get_timing(input_path):
 def parse_timing(filename, timing):
     result = dict()
     filename = filename.split('/')[-1]
-    if (filename.startswith('googlehome') or 
-        filename.startswith('alexa')):
-        result = {'callStart': timing[0][0],
-                  'callEnd': timing[0][1],
-                  'commandStart': timing[1][0],
-                  'commandEnd': timing[1][1],
-                  'actionStart': timing[2][0],
-                  'actionEnd': timing[2][1]}
-    else:
-        result = {'callStart': timing[0][0],
-                  'callEnd': timing[0][1],
-                  'commandStart': timing[2][0],
-                  'commandEnd': timing[2][1],
-                  'actionStart': timing[3][0],
-                  'actionEnd': timing[3][1]}
+    result = {'callStart': timing[0][0],
+              'callEnd': timing[0][1],
+              'commandStart': timing[1][0],
+              'commandEnd': timing[1][1],
+              'actionStart': timing[2][0],
+              'actionEnd': timing[2][1]}
+#    if (filename.startswith('googlehome') or 
+#        filename.startswith('alexa')):
+#        result = {'callStart': timing[0][0],
+#                  'callEnd': timing[0][1],
+#                  'commandStart': timing[1][0],
+#                  'commandEnd': timing[1][1],
+#                  'actionStart': timing[2][0],
+#                  'actionEnd': timing[2][1]}
+#    else:
+#        result = {'callStart': timing[0][0],
+#                  'callEnd': timing[0][1],
+#                  'commandStart': timing[2][0],
+#                  'commandEnd': timing[2][1],
+#                  'actionStart': timing[3][0],
+#                  'actionEnd': timing[3][1]}
 
     return result
 
@@ -109,7 +115,7 @@ if __name__ == '__main__':
                         help='Z-Score threshold')
     parser.add_argument('-s', '--space',
                         type=float,
-                        default=0.5,
+                        default=1.0,
                         help='Time between commands')
     ARGS = parser.parse_args()
     main()
