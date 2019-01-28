@@ -33,8 +33,8 @@ if __name__ == '__main__':
                         help='ip address of home router',
                         type=str,
                         required=True)
-    parser.add_argument('-h', '--host-ip',
-                        help='host ip address',
+    parser.add_argument('-e', '--exclude-ip',
+                        help='exclude ip address',
                         type=str,
                         required=True)
     parser.add_argument('-o', '--output',
