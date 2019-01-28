@@ -1,3 +1,11 @@
+# pycharm
+*.idea/
+
+# collected files
+*.pcap
+*.wav
+*.mp4
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -108,3 +116,9 @@ venv.bak/
 
 # Mac os cache
 .DS_Store
+
+# temp data
+*.json
+*.mp3
+*.wav
+*.mp4
