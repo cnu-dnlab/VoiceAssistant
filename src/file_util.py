@@ -14,3 +14,6 @@ def get_files(path, ext='', recursive=False):
                         if recursive:
                             path_list.append(entry.path)
 
+def make_dirs(path):
+    os.makedirs(path, exist_ok=True)
+
