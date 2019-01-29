@@ -67,7 +67,7 @@ def main():
                         'connectStart': 0, 'connectEnd': 0,
                         'secureConnectionStart': 0, 'requestStart': 0, 
                         'responseStart': 0, 'responseEnd': 0,
-                        'white': white}
+                        'white': -white}
             except KeyError:
                 print('Something not found', key)
                 continue

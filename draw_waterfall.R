@@ -137,7 +137,7 @@ for (path in files) {
             xlim=c(0, ceiling(max(data[2:7])/5)*5),
             cex.main=1.5,
             add=TRUE)
-    barplot(t(as.matrix(data[16])),
+    barplot(t(as.matrix(data[16]))+padding,
             horiz=TRUE,
             names.arg=as.matrix(data[1]),
             col=c('white'),
