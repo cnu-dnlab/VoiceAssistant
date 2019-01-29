@@ -17,7 +17,7 @@ for (path in files) {
             col=c('darkgoldenrod1'),
             border=NA,
             yaxt='n',
-            xlim=c(0, ceiling(max(data[2:7])/5)*5),
+            xlim=c(0, ceiling(max(data[2:15])/5)*5),
             xlab='Load time (s)',
             cex.main=1.5)
     barplot(t(as.matrix(data[15]))+padding,
@@ -26,7 +26,7 @@ for (path in files) {
             col=c('darkslategray4'),
             border=NA,
             yaxt='n',
-            xlim=c(0, ceiling(max(data[2:7])/5)*5),
+            xlim=c(0, ceiling(max(data[2:15])/5)*5),
             cex.main=1.5,
             add=TRUE)
     barplot(t(as.matrix(data[14]))+padding,
@@ -35,7 +35,7 @@ for (path in files) {
             col=c('darkslategray2'),
             border=NA,
             yaxt='n',
-            xlim=c(0, ceiling(max(data[2:7])/5)*5),
+            xlim=c(0, ceiling(max(data[2:15])/5)*5),
             cex.main=1.5,
             add=TRUE)
     barplot(t(as.matrix(data[13]))+padding,
@@ -44,7 +44,7 @@ for (path in files) {
             col=c('goldenrod4'),
             border=NA,
             yaxt='n',
-            xlim=c(0, ceiling(max(data[2:7])/5)*5),
+            xlim=c(0, ceiling(max(data[2:15])/5)*5),
             cex.main=1.5,
             add=TRUE)
     barplot(t(as.matrix(data[12]))+padding,
@@ -53,7 +53,7 @@ for (path in files) {
             col=c('darkgoldenrod1'),
             border=NA,
             yaxt='n',
-            xlim=c(0, ceiling(max(data[2:7])/5)*5),
+            xlim=c(0, ceiling(max(data[2:15])/5)*5),
             cex.main=1.5,
             add=TRUE)
     barplot(t(as.matrix(data[10]))+padding,
@@ -62,7 +62,7 @@ for (path in files) {
             col=c('white'),
             border=NA,
             yaxt='n',
-            xlim=c(0, ceiling(max(data[2:7])/5)*5),
+            xlim=c(0, ceiling(max(data[2:15])/5)*5),
             cex.main=1.5,
             add=TRUE)
     barplot(t(as.matrix(data[9]))+padding,
@@ -71,7 +71,7 @@ for (path in files) {
             col=c('gray'),
             border=NA,
             yaxt='n',
-            xlim=c(0, ceiling(max(data[2:7])/5)*5),
+            xlim=c(0, ceiling(max(data[2:15])/5)*5),
             cex.main=1.5,
             add=TRUE)
     barplot(t(as.matrix(data[8]))+padding,
@@ -80,7 +80,7 @@ for (path in files) {
             col=c('white'),
             border=NA,
             yaxt='n',
-            xlim=c(0, ceiling(max(data[2:7])/5)*5),
+            xlim=c(0, ceiling(max(data[2:15])/5)*5),
             cex.main=1.5,
             add=TRUE)
     barplot(t(as.matrix(data[7])),
@@ -89,7 +89,7 @@ for (path in files) {
             col=c('darkred'),
             border=NA,
             yaxt='n',
-            xlim=c(0, ceiling(max(data[2:7])/5)*5),
+            xlim=c(0, ceiling(max(data[2:15])/5)*5),
             cex.main=1.5,
             add=TRUE)
     barplot(t(as.matrix(data[6])),
@@ -98,7 +98,7 @@ for (path in files) {
             col=c('white'),
             border=NA,
             yaxt='n',
-            xlim=c(0, ceiling(max(data[2:7])/5)*5),
+            xlim=c(0, ceiling(max(data[2:15])/5)*5),
             cex.main=1.5,
             add=TRUE)
     barplot(t(as.matrix(data[5])),
@@ -107,7 +107,7 @@ for (path in files) {
             col=c('darkseagreen4'),
             border=NA,
             yaxt='n',
-            xlim=c(0, ceiling(max(data[2:7])/5)*5),
+            xlim=c(0, ceiling(max(data[2:15])/5)*5),
             cex.main=1.5,
             add=TRUE)
     barplot(t(as.matrix(data[4])),
@@ -116,7 +116,7 @@ for (path in files) {
             col=c('white'),
             border=NA,
             yaxt='n',
-            xlim=c(0, ceiling(max(data[2:7])/5)*5),
+            xlim=c(0, ceiling(max(data[2:15])/5)*5),
             cex.main=1.5,
             add=TRUE)
     barplot(t(as.matrix(data[3])),
@@ -125,7 +125,7 @@ for (path in files) {
             col=c('darkseagreen1'),
             border=NA,
             yaxt='n',
-            xlim=c(0, ceiling(max(data[2:7])/5)*5),
+            xlim=c(0, ceiling(max(data[2:15])/5)*5),
             cex.main=1.5,
             add=TRUE)
     barplot(t(as.matrix(data[2])),
@@ -134,7 +134,7 @@ for (path in files) {
             col=c('white'),
             border=NA,
             yaxt='n',
-            xlim=c(0, ceiling(max(data[2:7])/5)*5),
+            xlim=c(0, ceiling(max(data[2:15])/5)*5),
             cex.main=1.5,
             add=TRUE)
     barplot(t(as.matrix(data[16]))+padding,
@@ -143,7 +143,7 @@ for (path in files) {
             col=c('white'),
             border=NA,
             yaxt='n',
-            xlim=c(0, ceiling(max(data[2:7])/5)*5),
+            xlim=c(0, ceiling(max(data[2:15])/5)*5),
             cex.main=1.5,
             add=TRUE)
 
