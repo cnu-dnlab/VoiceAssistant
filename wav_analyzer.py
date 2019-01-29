@@ -86,7 +86,11 @@ def main():
             writer.writeheader()
         for path in get_files(ARGS.input, ext='.wav'):
             print('Start: {0}'.format(path))
-            timing = get_timing(path)
+            try:
+                timing = get_timing(path)
+            except IndexError:
+                print('Too quite: {0}'.format(path))
+                continue
             filename = path.split('/')[-1]
             timing['device'] = filename.split('-')[0]
             timing['command'] = (filename.split('-')[1]).split('.')[0]
@@ -111,7 +115,7 @@ if __name__ == '__main__':
                         help='Buffer second for calculate z-score')
     parser.add_argument('-z', '--zscore',
                         type=float,
-                        default=4.0,
+                        default=4.0*2,
                         help='Z-Score threshold')
     parser.add_argument('-s', '--space',
                         type=float,
