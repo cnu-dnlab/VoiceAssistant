@@ -56,25 +56,32 @@ class FlowTiming(object):
 
     def _update_udp(self, row):
         time_relative = row['frame.time_relative']
+        src_ip = row['ip.src']
         src_port = row['udp.srcport']
+        dst_ip = row['ip.dst']
         dst_port = row['udp.dstport']
         qry_name = row['dns.qry.name']
         udp_key = self._get_udp_key(row)
-        if src_port != '53' and dst_port != '53':
-            return
         if qry_name not in self.dns.keys():
             self.dns[qry_name] = dict()
         if dst_port == '53':
             self.dns[qry_name]['domainLookupStart'] = time_relative
-        if src_port == '53':
+        elif src_port == '53':
             aname = row['dns.a']
             self.dns[qry_name]['domainLookupEnd'] = time_relative
             self.dns[qry_name]['aname'] = aname.split(',')
         if src_port == '443' or dst_port == '443':
             item = self.flow.get(udp_key, dict())
-            if 'quicConnectStart' not in item.keys():
-                item['quickConnectStart'] = time_relative
-            item['quicConnectEnd'] = time_relative
+            #if 'quicConnectStart' not in item.keys():
+            #    item['quickConnectStart'] = time_relative
+            #item['quicConnectEnd'] = time_relative
+            if src_ip == self.host_ip:
+                if 'requestStart' not in item.keys():
+                    item['requestStart'] = time_relative
+            elif dst_ip == self.host_ip:
+                if 'responseStart' not in item.keys():
+                    item['responseStart'] = time_relative
+                item['responseEnd'] = time_relative
             self.flow[udp_key] = item
 
     def _get_udp_key(self, row):
@@ -102,11 +109,11 @@ class FlowTiming(object):
         tcp_key = self._get_tcp_key(row)
         item = self.flow.get(tcp_key, dict())
 
-        if syn == '1':
+        if syn == '1' and 'connectStart' not in item.keys():
             item['connectStart'] = time_relative
-        if fin == '1':
+        if fin == '1' and 'connectEnd' not in item.keys():
             item['connectEnd'] = time_relative
-        if ssl == '1':
+        if ssl == '1' and 'secureConnectionStart' not in item.keys():
             item['secureConnectionStart'] = time_relative
 
         if (tcp_key.split(':')[1]).split('-')[0] != '443':
@@ -182,6 +189,8 @@ class FlowTiming(object):
         rdns = dict()
         for key in self.dns.keys():
             item = self.dns[key]
+            if 'aname' not in item.keys():
+                continue
             for aname in item['aname']:
                 try:
                     rdns[aname] = {
