@@ -1,4 +1,5 @@
 import os
+import csv
 import soundfile as sf
 import numpy as np
 
@@ -6,6 +7,8 @@ from src.wav_util import wav_normalize
 from src.file_util import get_files
 
 ARGS = None
+FIELDNAMES = ['device', 'command', 'callStart', 'callEnd', 
+              'commandStart', 'commandEnd', 'actionStart' ,'actionEnd']
 
 
 def is_talk(data, avg, std):
@@ -49,36 +52,50 @@ def get_timing(input_path):
 def parse_timing(filename, timing):
     result = dict()
     filename = filename.split('/')[-1]
-    if (filename.startswith('googlehome') or 
-        filename.startswith('alexa')):
-        result = {'callStart': timing[0][0],
-                  'callEnd': timing[0][1],
-                  'commandStart': timing[1][0],
-                  'commandEnd': timing[1][1],
-                  'actionStart': timing[2][0],
-                  'actionEnd': timing[2][1]}
-    else:
-        result = {'callStart': timing[0][0],
-                  'callEnd': timing[0][1],
-                  'commandStart': timing[2][0],
-                  'commandEnd': timing[2][1],
-                  'actionStart': timing[3][0],
-                  'actionEnd': timing[3][1]}
+    result = {'callStart': timing[0][0],
+              'callEnd': timing[0][1],
+              'commandStart': timing[1][0],
+              'commandEnd': timing[1][1],
+              'actionStart': timing[2][0],
+              'actionEnd': timing[2][1]}
+#    if (filename.startswith('googlehome') or 
+#        filename.startswith('alexa')):
+#        result = {'callStart': timing[0][0],
+#                  'callEnd': timing[0][1],
+#                  'commandStart': timing[1][0],
+#                  'commandEnd': timing[1][1],
+#                  'actionStart': timing[2][0],
+#                  'actionEnd': timing[2][1]}
+#    else:
+#        result = {'callStart': timing[0][0],
+#                  'callEnd': timing[0][1],
+#                  'commandStart': timing[2][0],
+#                  'commandEnd': timing[2][1],
+#                  'actionStart': timing[3][0],
+#                  'actionEnd': timing[3][1]}
 
     return result
 
 def main():
-    print(('device,command,callStart,callEnd,commandStart,commandEnd,'
-           'actionStart,actionEnd'))
-    for path in get_files(ARGS.input, ext='.wav'):
-        timing = get_timing(path)
-        filename = path.split('/')[-1]
-        timing['device'] = filename.split('_')[0]
-        #device = filename.split('-')[0]
-        timing['command'] = filename
-        print(('{device},{command},{callStart},{callEnd},'
-               '{commandStart},{commandEnd},'
-               '{actionStart},{actionEnd}').format_map(timing))
+    mode = 'w'
+    if os.path.exists(ARGS.output):
+        mode = 'a'
+    with open(ARGS.output, mode) as f:
+        writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
+        if f.mode == 'w':
+            writer.writeheader()
+        for path in get_files(ARGS.input, ext='.wav'):
+            print('Start: {0}'.format(path))
+            try:
+                timing = get_timing(path)
+            except IndexError:
+                print('Too quite: {0}'.format(path))
+                continue
+            filename = path.split('/')[-1]
+            timing['device'] = filename.split('-')[0]
+            timing['command'] = (filename.split('-')[1]).split('.')[0]
+            writer.writerow(timing)
+            print('End: {0}'.format(path))
 
 
 if __name__ == '__main__':
@@ -87,18 +104,22 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--input',
                         type=str,
                         required=True,
-                        help='Input file')
+                        help='Input directory')
+    parser.add_argument('-o', '--output',
+                        type=str,
+                        required=True,
+                        help='Output file')
     parser.add_argument('-b', '--buffer',
                         type=float,
                         default=1.0,
                         help='Buffer second for calculate z-score')
     parser.add_argument('-z', '--zscore',
                         type=float,
-                        default=4.0,
+                        default=4.0*2,
                         help='Z-Score threshold')
     parser.add_argument('-s', '--space',
                         type=float,
-                        default=0.5,
+                        default=1.0,
                         help='Time between commands')
     ARGS = parser.parse_args()
     main()
