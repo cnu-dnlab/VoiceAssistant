@@ -159,9 +159,6 @@ for (path in files) {
            fill =c('darkseagreen1', 'darkseagreen4', 'darkred',
                    'gray', 'darkgoldenrod1', 'goldenrod4', 
                    'darkslategray2', 'darkslategray4'))
-    #       legend=c('', 'DNS', '', 'Connect', 'SecureConnect',
-    #                'Request', '', 'Response'),
-    #       fill =c('white', 'gray', 'white', 'darkgoldenrod1', 'goldenrod4', 'darkslategray2', 'white', 'darkslategray4'))
 
     par = temp_par
     dev.off()
