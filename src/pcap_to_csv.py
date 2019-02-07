@@ -4,8 +4,9 @@ import subprocess
 
 
 class PcapToCSV(object):
-    def __init__(self, pcap_path, remove=False):
+    def __init__(self, pcap_path, max_time, remove=False):
         self.pcap_path = pcap_path
+        self.max_time = max_time
         self.csv_path = self._execute_tshark()
         self.remove = remove
 
@@ -17,7 +18,8 @@ class PcapToCSV(object):
     def _execute_tshark(self):
         pcap_path = self.pcap_path
         csv_path = '.'.join((pcap_path.split('.'))[:-1]) + '.csv'
-        command = ('tshark -Y "tcp or udp" -T fields '
+        command = ('tshark -Y "(tcp or udp) and (frame.time_relative<={2:.9f})" '
+                   '-T fields '
                    '-e frame.time_relative -e ip.proto -e ip.src '
                    '-e ip.len '
                    '-e tcp.srcport -e udp.srcport -e ip.dst -e tcp.dstport -e udp.dstport '
@@ -28,7 +30,7 @@ class PcapToCSV(object):
                    '-e dns.a -e dns.qry.name '
                    '-E header=y -E separator=, '
                    '-E quote=d '
-                   '-r {0} > {1}').format(self.pcap_path, csv_path)
+                   '-r {0} > {1}').format(self.pcap_path, csv_path, self.max_time)
         subprocess.run(command, shell=True)
         return csv_path
 
