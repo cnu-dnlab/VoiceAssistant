@@ -5,6 +5,7 @@ from operator import itemgetter
 from pcap_to_csv import PcapToCSV
 from flow_timing import FlowTiming
 from updown_timing import UpDownTiming
+from sync_util import sync_a_b
 
 TIMING_ORDER = ['domainLookupStart', 'domainLookupEnd',
                 'connectStart', 'connectEnd',
@@ -40,6 +41,8 @@ def export_pcap_timing(pcap_path, csv_path):
         writer.writerows(result)
 
 def export_pcap_updown(pcap_path, csv_path):
+    wav_path = '{0}.wav'.format('.'.join(pcap_path.split('.')[:-1]))
+    sync_time = sync_a_b(pcap_path, wav_path)
     pcap_reader = PcapToCSV(pcap_path, remove=True)
     updown_timer = UpDownTiming(pcap_reader.get_csv_path())
     flow = updown_timer.get_updown_timing()
@@ -49,6 +52,7 @@ def export_pcap_updown(pcap_path, csv_path):
     updown_keys.sort()
     for key in flow.keys():
         for time_rel, data in flow[key]:
+            time_rel = float(time_rel) + sync_time
             item = result.get(time_rel, [-1, -1, -1, -1])
             pos = updown_keys.index(key)+1
             if int(data) > 0:
