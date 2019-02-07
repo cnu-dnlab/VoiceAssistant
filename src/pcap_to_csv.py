@@ -23,6 +23,7 @@ class PcapToCSV(object):
                    '-e tcp.srcport -e udp.srcport -e ip.dst -e tcp.dstport -e udp.dstport '
                    '-e tcp.flags.syn -e tcp.flags.ack -e tcp.flags.fin '
                    '-e tcp.flags.push '
+                   '-e tcp.len -e udp.length '
                    '-e ssl.handshake '
                    '-e dns.a -e dns.qry.name '
                    '-E header=y -E separator=, '

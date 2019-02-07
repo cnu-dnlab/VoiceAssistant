@@ -4,6 +4,7 @@ from operator import itemgetter
 
 from pcap_to_csv import PcapToCSV
 from flow_timing import FlowTiming
+from updown_timing import UpDownTiming
 
 TIMING_ORDER = ['domainLookupStart', 'domainLookupEnd',
                 'connectStart', 'connectEnd',
@@ -37,3 +38,41 @@ def export_pcap_timing(pcap_path, csv_path):
         writer = csv.DictWriter(f, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
         writer.writeheader()
         writer.writerows(result)
+
+def export_pcap_updown(pcap_path, csv_path):
+    pcap_reader = PcapToCSV(pcap_path, remove=True)
+    updown_timer = UpDownTiming(pcap_reader.get_csv_path())
+    flow = updown_timer.get_updown_timing()
+    result = dict()
+
+    updown_keys = list(flow.keys())
+    updown_keys.sort()
+    for key in flow.keys():
+        for time_rel, data in flow[key]:
+            item = result.get(time_rel, [-1, -1, -1, -1])
+            pos = updown_keys.index(key)+1
+            if int(data) > 0:
+                item[0] = pos
+                item[1] = int(data)
+            else:
+                item[2] = pos
+                item[3] = int(data)
+            result[time_rel] = item
+
+    items = list(result.items())
+    items.sort()
+
+    with open(csv_path, 'w') as f:
+        writer = csv.writer(f)
+        writer.writerow(['time', 'up', 'updata', 'down', 'downdata'])
+        for item in items:
+            row = [item[0]] + item[1]
+            if row[3] != -1:
+                row[4] = -row[4]
+            writer.writerow(row)
+
+    with open(csv_path+'.head', 'w') as f:
+        writer = csv.writer(f)
+        for key in updown_keys:
+            writer.writerow([key])
+
