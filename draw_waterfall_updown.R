@@ -6,8 +6,6 @@ for (path in files) {
     filename = unlist(strsplit(path, '[.]'))[1]
 
     data = read.csv(path, header=TRUE)
-    temp_par = par()
-
     png(paste(filename, '.png', sep=''), width = 1280, height = 768)
     temp_par = par()
     par(mar = c(6, 5, 5, 4)+0.1)
@@ -41,7 +39,7 @@ for (path in files) {
     par(xpd = TRUE)
     head_file = paste(filename, '.head', sep='')
     head_data = read.csv(head_file, header=FALSE, sep=",")
-    for (index in seq(1, round(max(data['time'])))) {
+    for (index in seq(1, round(max(data['point'])))) {
         text(0, index, head_data['V1'][index,], cex=1.25)
     }
 
