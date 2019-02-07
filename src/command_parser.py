@@ -38,6 +38,7 @@ class CommandSpeeker():
 		#time.sleep(0.5) # if you need
 		for command in self.commands[category]:
 			if command=='call' : self._play_command_to_mp3(self.call)
+			elif command.split(' ')[0]=='delay': time.sleep(int(command.split(' ')[1]))
 			else: self._play_command_to_mp3(command)
 			time.sleep(1)
 	
