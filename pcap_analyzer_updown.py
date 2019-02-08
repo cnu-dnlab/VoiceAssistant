@@ -45,6 +45,9 @@ def main():
         except KeyError:
             print('Invalid wav csv: {0}'.format(path))
             continue
+        except ValueError:
+            print('Invalid pcap: {0}'.format(path))
+            continue
         print('Done: {0}'.format(output_path))
 
 
