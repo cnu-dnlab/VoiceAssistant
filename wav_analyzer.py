@@ -3,7 +3,7 @@ import csv
 import soundfile as sf
 import numpy as np
 
-from src.wav_util import wav_normalize
+from src.wav_util import wav_normalize, wav_mono
 from src.file_util import get_files
 
 ARGS = None
@@ -76,10 +76,17 @@ def parse_timing(filename, timing):
 
     return result
 
+def get_histogram(filename, cut_point, pad=1):
+    data, fs = sf.read(filename, dtype='float32')
+    nom_data = wav_normalize(data)
+    mono_data = wav_mono(nom_data)
+    return mono_data[:int((cut_point+pad)*fs):int(0.001*fs)]
+
 def main():
     mode = 'w'
     if os.path.exists(ARGS.output):
         mode = 'a'
+    os.makedirs(ARGS.wav_output, exist_ok=True)
     with open(ARGS.output, mode) as f:
         writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
         if f.mode == 'w':
@@ -95,6 +102,11 @@ def main():
             timing['device'] = filename.split('-')[0]
             timing['command'] = (filename.split('-')[1]).split('.')[0]
             writer.writerow(timing)
+            histogram = get_histogram(path, float(timing['actionEnd']))
+            filename = path.split('/')[-1]
+            histname = '{0}.csv'.format('.'.join(filename.split('.')[:-1]))
+            hist_path = os.path.join(ARGS.wav_output, histname)
+            np.savetxt(hist_path, histogram, delimiter=',')
             print('End: {0}'.format(path))
 
 
@@ -109,6 +121,10 @@ if __name__ == '__main__':
                         type=str,
                         required=True,
                         help='Output file')
+    parser.add_argument('-w', '--wav-output',
+                        type=str,
+                        required=True,
+                        help='Output wav histogram directory')
     parser.add_argument('-b', '--buffer',
                         type=float,
                         default=1.0,
