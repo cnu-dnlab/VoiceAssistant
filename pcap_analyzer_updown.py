@@ -43,7 +43,7 @@ def main():
             export_pcap_updown(path, output_path, 
                                float(wav_data[device_command]['actionEnd']))
         except KeyError:
-            print('Invalid wav csv: {0}'.format(path))
+            print('Invalid wav csv: {0}'.format(device_command))
             continue
         except ValueError:
             print('Invalid pcap: {0}'.format(path))
