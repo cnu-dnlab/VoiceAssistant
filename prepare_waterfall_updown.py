@@ -63,8 +63,19 @@ def main():
                     ttime = ttime + 1e-9
                 if row['up'] != '-1':
                     point = int(row['up']) + (int(row['updata'])/1460*0.45)
-                else:
+                    flag = 'up'
+                elif row['down'] != '-1':
                     point = int(row['down']) - (int(row['downdata'])/1460*0.45)
+                    flag = 'down'
+                elif row['syn'] != '-1':
+                    flag = 'syn'
+                elif row['fin'] != '-1':
+                    flag = 'fin'
+                elif row['ssl'] != '-1':
+                    flag = 'ssl'
+                elif row['dns'] != '-1':
+                    flag = 'dns'
+                    
                 data = {'time': ttime,
                         'point': point}
                 database[ttime] = data
