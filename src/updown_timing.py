@@ -122,7 +122,7 @@ class UpDownTiming(object):
         else:
             if int(row['tcp.len']) < 1:
                 data = 0
-            if src_ip == self.host_ip:
+            elif src_ip == self.host_ip:
                 data = str(int(row['tcp.len']))
             else:
                 data = str(-int(row['tcp.len']))
