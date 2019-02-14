@@ -48,10 +48,10 @@ for (path in files) {
     lines(x, y, type='p', pch=9, col='green', cex=4)
     x = as.matrix(data['time'][data['flag']=='fin'])
     y = as.matrix(data['point'][data['flag']=='fin'])
-    lines(x, y, type='p', pch=9, col='yellow', cex=4)
+    lines(x, y, type='p', pch=9, col='darkmagenta', cex=4)
     x = as.matrix(data['time'][data['flag']=='ssl'])
     y = as.matrix(data['point'][data['flag']=='ssl'])
-    lines(x, y, type='p', pch=9, col='brown', cex=4)
+    lines(x, y, type='p', pch=9, col='goldenrod4', cex=4)
     # DNS
     x = as.matrix(data['time'][data['flag']=='dns'])
     y = as.matrix(data['point'][data['flag']=='dns'])
@@ -80,12 +80,22 @@ for (path in files) {
     }
 
     # abline
+    # and rect
+    par(xpd = FALSE)
     line_file = paste(filename, '.line', sep='')
     line_data = read.csv(line_file, header=FALSE, sep=',')
     labels = c('callStart', 'callEnd',
                'commandStart', 'commandEnd',
                'actionStart', 'actionEnd')
+    alpha = 0.1
     for (index in seq(1, 6)) {
+        if (index%%2 == 0) {
+            rect(line_data['V1'][index-1,], 0-1, 
+                 line_data['V1'][index,], round(max(data['point']))+1,
+                 col=rgb(230/255, 115/255, 0, alpha=alpha),
+                 border=FALSE)
+            alpha = alpha+0.05
+        }
         abline(v=line_data['V1'][index,], lty=2, col='black')
         text(line_data['V1'][index,], ifelse(index%%2==1, -0.5, -0.55), labels[index], cex=1.25)
     }
@@ -94,7 +104,7 @@ for (path in files) {
     legend('bottomright',
            legend=c('Data Upload', 'Data Download', 'TCP SYN', 'TCP FIN', 'SSL Handshake',
                     'DNS'),
-           col=c('blue', 'red', 'green', 'yellow', 'brown', 'black'),
+           col=c('blue', 'red', 'green', 'darkmagenta', 'goldenrod4', 'black'),
            pch=c(24, 25, 9, 9, 9, 13))
 
     par = temp_par
