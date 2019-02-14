@@ -1,4 +1,5 @@
 import csv
+import statistics
 
 from operator import itemgetter
 
@@ -46,7 +47,7 @@ def export_pcap_updown(pcap_path, csv_path, max_time):
     pcap_reader = PcapToCSV(pcap_path, max_time=(max_time-sync_time), 
                             remove=True)
     updown_timer = UpDownTiming(pcap_reader.get_csv_path())
-    flow, rdns = updown_timer.get_updown_timing()
+    flow, rdns, rtt, hop = updown_timer.get_updown_timing()
     result = dict()
 
     updown_keys = list(flow.keys())
@@ -95,5 +96,13 @@ def export_pcap_updown(pcap_path, csv_path, max_time):
                 url = rdns[ip]['url']
             else:
                 url = None
-            writer.writerow([key, url])
+            if ip in rtt.keys():
+                rtt_value = statistics.mean(rtt[ip])
+            else:
+                rtt_value = None
+            if ip in hop.keys():
+                hop_value = statistics.mean(hop[ip])
+            else:
+                hop_value = None
+            writer.writerow([key, url, rtt_value, hop_value])
 
