@@ -86,7 +86,7 @@ for (path in files) {
     line_data = read.csv(line_file, header=FALSE, sep=',')
     labels = c('callStart', 'callEnd',
                'commandStart', 'commandEnd',
-               'actionStart', 'actionEnd')
+               'serviceStart', 'serviceEnd')
     alpha = 0.1
     for (index in seq(1, 6)) {
         if (index%%2 == 0) {
