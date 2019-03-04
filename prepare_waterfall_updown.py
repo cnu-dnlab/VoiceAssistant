@@ -7,7 +7,7 @@ import numpy as np
 from src.file_util import get_files
 
 ARGS = None
-FIELDNAMES = ['time', 'point']
+FIELDNAMES = ['time', 'point', 'flag']
 
 
 def get_wav_data(path):
@@ -63,10 +63,26 @@ def main():
                     ttime = ttime + 1e-9
                 if row['up'] != '-1':
                     point = int(row['up']) + (int(row['updata'])/1460*0.45)
-                else:
+                    flag = 'up'
+                elif row['down'] != '-1':
                     point = int(row['down']) - (int(row['downdata'])/1460*0.45)
+                    flag = 'down'
+                elif row['syn'] != '-1':
+                    point = int(row['syn'])
+                    flag = 'syn'
+                elif row['fin'] != '-1':
+                    point = int(row['fin'])
+                    flag = 'fin'
+                elif row['ssl'] != '-1':
+                    point = int(row['ssl'])
+                    flag = 'ssl'
+                elif row['dns'] != '-1':
+                    point = int(row['dns'])
+                    flag = 'dns'
+                    
                 data = {'time': ttime,
-                        'point': point}
+                        'point': point,
+                        'flag': flag}
                 database[ttime] = data
         with open(hist_path, 'r') as f:
             reader = csv.reader(f)
@@ -76,7 +92,8 @@ def main():
                     ttime = ttime + 1e-9
                 point = float(row[0])*0.45
                 data = {'time': ttime,
-                        'point': point}
+                        'point': point,
+                        'flag': 'wav'}
                 database[ttime] = data
                 ttime = ttime + 0.001
         # Data sorting

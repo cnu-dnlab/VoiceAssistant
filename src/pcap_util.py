@@ -46,7 +46,7 @@ def export_pcap_updown(pcap_path, csv_path, max_time):
     pcap_reader = PcapToCSV(pcap_path, max_time=(max_time-sync_time), 
                             remove=True)
     updown_timer = UpDownTiming(pcap_reader.get_csv_path())
-    flow = updown_timer.get_updown_timing()
+    flow, rdns = updown_timer.get_updown_timing()
     result = dict()
 
     updown_keys = list(flow.keys())
@@ -54,9 +54,18 @@ def export_pcap_updown(pcap_path, csv_path, max_time):
     for key in flow.keys():
         for time_rel, data in flow[key]:
             time_rel = float(time_rel) + sync_time
-            item = result.get(time_rel, [-1, -1, -1, -1])
+            #  [Up ip, Up size, Down ip, Down size, SYN, FIN, SSL, DNS]
+            item = result.get(time_rel, [-1, -1, -1, -1, -1, -1, -1, -1])
             pos = updown_keys.index(key)+1
-            if int(data) > 0:
+            if data == 'syn':
+                item[4] = pos
+            elif data == 'fin':
+                item[5] = pos
+            elif data == 'ssl':
+                item[6] = pos
+            elif data == 'dns':
+                item[7] = pos
+            elif int(data) > 0:
                 item[0] = pos
                 item[1] = int(data)
             else:
@@ -69,7 +78,8 @@ def export_pcap_updown(pcap_path, csv_path, max_time):
 
     with open(csv_path, 'w') as f:
         writer = csv.writer(f)
-        writer.writerow(['time', 'up', 'updata', 'down', 'downdata'])
+        writer.writerow(['time', 'up', 'updata', 'down', 'downdata', 
+                         'syn', 'fin', 'ssl', 'dns'])
         for item in items:
             row = [item[0]] + item[1]
             if row[3] != -1:
@@ -80,5 +90,10 @@ def export_pcap_updown(pcap_path, csv_path, max_time):
     with open(head_path, 'w') as f:
         writer = csv.writer(f)
         for key in updown_keys:
-            writer.writerow([key])
+            ip = key.split(':')[0]
+            if ip in rdns.keys():
+                url = rdns[ip]['url']
+            else:
+                url = None
+            writer.writerow([key, url])
 
