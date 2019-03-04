@@ -10,6 +10,8 @@ class UpDownTiming(object):
     def __init__(self, csv_path):
         self.updown = dict()
         self.dns = dict()
+        self.rtt = dict()
+        self.hop = dict()
         self.csv_path = csv_path
         self.host_ip = self._get_host_ip()
 
@@ -20,8 +22,10 @@ class UpDownTiming(object):
             for row in reader:
                 src_ip = row['ip.src']
                 dst_ip = row['ip.dst']
-                ip_counter[src_ip] = ip_counter.get(src_ip, 0) + 1
-                ip_counter[dst_ip] = ip_counter.get(dst_ip, 0) + 1
+                if src_ip.startswith('192'):
+                    ip_counter[src_ip] = ip_counter.get(src_ip, 0) + 1
+                if dst_ip.startswith('192'):
+                    ip_counter[dst_ip] = ip_counter.get(dst_ip, 0) + 1
         return max(ip_counter.items(), key=itemgetter(1))[0]
 
     def get_updown_timing(self):
@@ -36,6 +40,7 @@ class UpDownTiming(object):
                     dst_ip = row['ip.dst']
                     if src_ip != self.host_ip and dst_ip != self.host_ip:
                         continue
+                    self._update_ip(row)
                     if IP_PROTO[proto] == 'UDP':
                         self._update_udp(row)
                     elif IP_PROTO[proto] == 'TCP':
@@ -55,7 +60,30 @@ class UpDownTiming(object):
                     item.append((rdns[ip]['end'], 'dns'))
                 self.updown[key] = item
 
-        return self.updown, rdns
+        return self.updown, rdns, self.rtt, self.hop
+
+    def _update_ip(self, row):
+        src_ip = row['ip.src']
+        rtt = row['tcp.analysis.ack_rtt']
+        ttl = row['ip.ttl']
+        if src_ip == self.host_ip:
+            return
+        if rtt != '':
+            rtt = float(rtt)
+            if src_ip not in self.rtt.keys():
+                self.rtt[src_ip] = list()
+            self.rtt[src_ip].append(rtt)
+        if ttl != '':
+            ttl = int(ttl)
+            if ttl > 128:
+                hop = 255-ttl
+            elif ttl > 64:
+                hop = 128-ttl
+            else:
+                hop = 64-ttl
+            if src_ip not in self.hop.keys():
+                self.hop[src_ip] = list()
+            self.hop[src_ip].append(hop)
 
     def _update_udp(self, row):
         time_relative = row['frame.time_relative']
@@ -155,3 +183,4 @@ class UpDownTiming(object):
                 if 'end' in item.keys():
                     rdns[aname]['end'] = item['end']
         return rdns
+
