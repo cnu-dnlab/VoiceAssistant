@@ -10,6 +10,10 @@
   - soundfile
 - R
 
+## Version history
+- 190216: 1.0
+  - First release version!
+
 ## Usage
 1. Analyze WAV files
 ```bash
