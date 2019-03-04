@@ -15,7 +15,18 @@
   - First release version!
 
 ## Usage
-- pcap: python3 vapm_collector_pcap.py --tmp_path /tmp/pcap/router.pcap --router_ip 192.168.1.1 --output ./router.pcap
+1. Analyze WAV files
+```bash
+python3 wav_analyzer.py
+```
+2. Analyze PCAP files with WAV results
+```bash
+python3 pcap_analyzer_updown.py
+```
+3. Prepare waterfall chart meterials
+```bash
+python3 prepare_waterfall_updown.py
+```
 
 ## Developer
 - LuHa(munhyunsu@gmail.com)
