@@ -30,18 +30,6 @@ for (path in files) {
     y = as.matrix(data['point'][data['flag']=='down'])
     lines(x, y, type='p', pch=25, col='red', cex=3)
 
-#    for (pivot in seq(1, round(max(data['point'])))) {
-#        x = as.matrix(data['time'][
-#                (data['flag']=='up'|data['flag']=='down') &
-#                round(data['point'])==pivot])
-#        y = as.matrix(data['point'][
-#                (data['flag']=='up'|data['flag']=='down') &
-#                round(data['point'])==pivot])
-#        lines(x, y, type='p', 
-#              pch=ifelse(y%%1<0.5, 24, 25),
-#              col=ifelse(y%%1<0.5, 'blue', 'red'),
-#              cex=3)
-#    }
     # TCP Flags
     x = as.matrix(data['time'][data['flag']=='syn'])
     y = as.matrix(data['point'][data['flag']=='syn'])
