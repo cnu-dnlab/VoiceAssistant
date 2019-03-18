@@ -22,10 +22,8 @@ class TestChecker():
             try:
                 result += self.record.recognize_google(audio, language=self.language)
             except sr.UnkownValueError:
-                #print("Google Speech Recognition could not understand audio")
                 break
             except sr.RequestError as e:
-                #print("Cloud not request result from Google Speech Recognition service; {0}".format(e))
                 break
         return result
     
