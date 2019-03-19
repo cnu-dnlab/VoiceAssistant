@@ -70,3 +70,4 @@ if __name__ == "__main__":
 
     test_checker = TestChecker(ARGS.language, ARGS.file_path)
     test_checker.get_result()
+    
