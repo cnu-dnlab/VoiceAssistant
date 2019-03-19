@@ -57,10 +57,10 @@ class CommandSpeaker():
 	
 	def _write_record(self, category, duration):
 		record_file = './'+datetime.today().strftime('%y%m%d')+'_test_record.csv'
-		isfrist = True
-		if os.path.exists(record_file): isfrist = False
+		isfirst = True
+		if os.path.exists(record_file): isfirst = False
 		with open(record_file, 'a') as file:
-			if isfrist: file.write('speaker\tcategory\ttime\n')
+			if isfirst: file.write('speaker\tcategory\ttime\n')
 			file.write(self.speaker+'\t'+category+'\t'+str(duration)+'\n')
 
 
