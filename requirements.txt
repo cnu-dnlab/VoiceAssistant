@@ -2,3 +2,5 @@ sounddevice
 soundfile
 opencv-python
 numpy
+PyAudio
+SpeechRecognition
