@@ -17,3 +17,9 @@ def get_files(path, ext='', recursive=False):
 def make_dirs(path):
     os.makedirs(path, exist_ok=True)
 
+def std_path(path):
+    user_path = os.path.expanduser(path)
+    abs_path = os.path.abspath(user_path)
+
+    return abs_path
+
