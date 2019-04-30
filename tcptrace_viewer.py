@@ -52,7 +52,7 @@ def main(_):
     writer = csv.writer(of)
     if of.mode == 'w':
         writer.writerow(['device', 'command', 'host1', 'host2', 'comp_conn', 
-                         'total_packets', 'bytes_sent', 'avg_win_adv'])
+                         'total_packets', 'bytes_sent', 'data_sent', 'avg_win_adv'])
 
     # Loop pcap files
     for path in get_files(FLAGS.input, ext='.pcap'):
@@ -75,9 +75,10 @@ def main(_):
             comp_conn = get_complete_conn(conn)
             total_packets = get_attributes(conn, 'total packets')
             bytes_sent = get_attributes(conn, 'unique bytes sent')
+            data_sent = get_attributes(conn, 'data bytes sent')
             avg_win_adv = get_attributes(conn, 'avg win adv')
             writer.writerow([device, command, host1, host2, comp_conn, 
-                             total_packets, bytes_sent, avg_win_adv])
+                             total_packets, bytes_sent, data_sent, avg_win_adv])
 
     pprint('End tcptrace viewer')
     of.close()
