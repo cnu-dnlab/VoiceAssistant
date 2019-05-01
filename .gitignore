@@ -1,5 +1,13 @@
 # Useful something
 macro_*
+analysis_scripts
+
+# result files
+*.csv
+
+# default data symbolic link
+data
+data/
 
 # vim
 *.swp
