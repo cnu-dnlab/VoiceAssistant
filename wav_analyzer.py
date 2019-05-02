@@ -8,7 +8,7 @@ from src.file_util import get_files
 
 ARGS = None
 FIELDNAMES = ['device', 'command', 'callStart', 'callEnd', 
-              'commandStart', 'commandEnd', 'actionStart' ,'actionEnd']
+              'commandStart', 'commandEnd', 'serviceStart' ,'serviceEnd']
 
 
 def is_talk(data, avg, std):
@@ -32,6 +32,10 @@ def binarization(data, fs):
 
 def get_timing(input_path):
     # prepare data: preprocessing
+    # to easy understand
+    # >>> np.argwhere([True, False, True, False, False])/10
+    # array([[0. ],
+    #       [0.2]])
     data, fs = sf.read(input_path, dtype='float32')
     nom_data = wav_normalize(data)
     bin_data = binarization(nom_data, fs)
@@ -40,6 +44,7 @@ def get_timing(input_path):
     # calculate timing
     timing = [[arg_data[0, 0], arg_data[0, 0]]]
     for value in arg_data[:, 0]:
+        # check the sounded time interval
         if abs(timing[-1][1]-value) <= ARGS.space:
             timing[-1][1] = value
         else:
@@ -51,30 +56,29 @@ def get_timing(input_path):
 
 def parse_timing(filename, timing):
     result = dict()
-    filename = filename.split('/')[-1]
+    # get Category and command from filename
+    filename = os.path.basename(filename)
+    category_command = filename.split('-')[1][:-4]
+    category = category_command.split('_')[0]
+    command = '_'.join(category_command.split('_')[1:])
+    # []: a command which second sound is the response
+    response = 2
+    if category in ['music', 'news', 'skill']:
+        if category == 'skill':
+            for coms in ['TED', 'FEBC', 'PLUGIN', 'TED']:
+                if coms in command:
+                    response = 3
+                    break
+        else:
+            response = 3
     result = {'callStart': timing[0][0],
               'callEnd': timing[0][1],
               'commandStart': timing[1][0],
               'commandEnd': timing[1][1],
-              'actionStart': timing[2][0],
-              'actionEnd': timing[2][1]}
-#    if (filename.startswith('googlehome') or 
-#        filename.startswith('alexa')):
-#        result = {'callStart': timing[0][0],
-#                  'callEnd': timing[0][1],
-#                  'commandStart': timing[1][0],
-#                  'commandEnd': timing[1][1],
-#                  'actionStart': timing[2][0],
-#                  'actionEnd': timing[2][1]}
-#    else:
-#        result = {'callStart': timing[0][0],
-#                  'callEnd': timing[0][1],
-#                  'commandStart': timing[2][0],
-#                  'commandEnd': timing[2][1],
-#                  'actionStart': timing[3][0],
-#                  'actionEnd': timing[3][1]}
-
+              'serviceStart': timing[response][0],
+              'serviceEnd': timing[response][1]}
     return result
+
 
 def get_histogram(filename, cut_point, pad=1):
     data, fs = sf.read(filename, dtype='float32')
@@ -82,17 +86,23 @@ def get_histogram(filename, cut_point, pad=1):
     mono_data = wav_mono(nom_data)
     return mono_data[:int((cut_point+pad)*fs):int(0.001*fs)]
 
+
 def main():
+    # create output directory
+    os.makedirs(ARGS.wav_output, exist_ok=True)
+    # check create or append
     mode = 'w'
     if os.path.exists(ARGS.output):
         mode = 'a'
-    os.makedirs(ARGS.wav_output, exist_ok=True)
+    # go something...
     with open(ARGS.output, mode) as f:
+        # prepare output file
         writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
         if f.mode == 'w':
             writer.writeheader()
+        # read analysis target file
         for path in get_files(ARGS.input, ext='.wav'):
-            print('Start: {0}'.format(path))
+            print('Start: {0}'.format(path)) # for DEBUG
             try:
                 timing = get_timing(path)
             except IndexError:
@@ -102,11 +112,14 @@ def main():
             timing['device'] = filename.split('-')[0]
             timing['command'] = (filename.split('-')[1]).split('.')[0]
             writer.writerow(timing)
-            histogram = get_histogram(path, float(timing['actionEnd']))
+
+            # The another thing: for drawing waterfall chart
+            histogram = get_histogram(path, float(timing['serviceEnd']))
             filename = path.split('/')[-1]
             histname = '{0}.csv'.format('.'.join(filename.split('.')[:-1]))
             hist_path = os.path.join(ARGS.wav_output, histname)
             np.savetxt(hist_path, histogram, delimiter=',')
+
             print('End: {0}'.format(path))
 
 
@@ -135,7 +148,7 @@ if __name__ == '__main__':
                         help='Z-Score threshold')
     parser.add_argument('-s', '--space',
                         type=float,
-                        default=1.0,
+                        default=0.75,
                         help='Time between commands')
     ARGS = parser.parse_args()
     main()

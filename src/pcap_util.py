@@ -90,6 +90,7 @@ def export_pcap_updown(pcap_path, csv_path, max_time):
     head_path = '.'.join(csv_path.split('.')[:-1]) + '.head'
     with open(head_path, 'w') as f:
         writer = csv.writer(f)
+        writer.writerow(['ip', 'url', 'rtt', 'hop'])
         for key in updown_keys:
             ip = key.split(':')[0]
             if ip in rdns.keys():

@@ -21,8 +21,8 @@ def get_wav_data(path):
                      'callEnd': row['callEnd'],
                      'commandStart': row['commandStart'],
                      'commandEnd': row['commandEnd'],
-                     'actionStart': row['actionStart'],
-                     'actionEnd': row['actionEnd']}
+                     'serviceStart': row['serviceStart'],
+                     'serviceEnd': row['serviceEnd']}
             data[key] = value
 
     return data
@@ -122,7 +122,7 @@ def main():
             writer = csv.writer(lf)
             for timing in ['callStart', 'callEnd',
                            'commandStart', 'commandEnd',
-                           'actionStart', 'actionEnd']:
+                           'serviceStart', 'serviceEnd']:
                 writer.writerow([wav_data[device_command][timing]])
         print('Done: {0}'.format(path))
 

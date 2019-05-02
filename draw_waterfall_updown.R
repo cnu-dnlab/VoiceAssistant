@@ -58,12 +58,12 @@ for (path in files) {
     # header
     par(xpd = TRUE)
     head_file = paste(filename, '.head', sep='')
-    head_data = read.csv(head_file, header=FALSE, sep=",")
+    head_data = read.csv(head_file, header=TRUE, sep=",")
     for (index in seq(1, round(max(data['point'])))) {
         text(x=0, y=index, 
-             labels=ifelse(is.na(as.character(head_data[['V2']][index])) | as.character(head_data[['V2']][index])=='',
-                           as.character(head_data[['V1']][index]),
-                           as.character(head_data[['V2']][index])),
+             labels=ifelse(is.na(as.character(head_data[['url']][index])) | as.character(head_data[['url']][index])=='',
+                           as.character(head_data[['ip']][index]),
+                           as.character(head_data[['url']][index])),
              cex=1.25)
     }
 
