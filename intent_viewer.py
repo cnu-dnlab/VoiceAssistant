@@ -16,6 +16,8 @@ def get_voice_intent(path, sth=0, mth=0, eth=float('inf')):
         for row in reader:
             if row['flag'] != 'up':
                 continue
+            if float(row['time']) < sth:
+                continue
             if float(row['time']) > eth:
                 break
             server = round(float(row['point']))
@@ -26,7 +28,7 @@ def get_voice_intent(path, sth=0, mth=0, eth=float('inf')):
 
     voice_server = max(servers.items(), key=itemgetter(1))[0]
     
-    intent = sth
+    intent = mth
     with open(path, 'r') as f:
         reader = csv.DictReader(f)
         down_set = set()
@@ -46,6 +48,9 @@ def get_voice_intent(path, sth=0, mth=0, eth=float('inf')):
             if size not in down_set:
                 intent = float(row['time'])
                 break
+            #elif intent == mth:
+            #    intent = float(row['time'])
+
     return voice_server, intent
 
 def get_wav_timing(path):
@@ -62,7 +67,7 @@ def get_wav_timing(path):
 
 def main():
     wav_timing = dict()
-    for path in get_files(ARGS.timing, ext='.csv'):
+    for path in get_files(ARGS.timing, ext='_wav.csv'):
         wav_timing.update(get_wav_timing(path))
 
     of = open(ARGS.output, 'w')
@@ -74,8 +79,11 @@ def main():
         commandStart = wav_timing[device_command]['commandStart']
         commandEnd = wav_timing[device_command]['commandEnd']
         serviceStart = wav_timing[device_command]['serviceStart']
-        voice_server, intent = get_voice_intent(path, 
-          float(commandStart), float(commandEnd), float(serviceStart))
+        try:
+            voice_server, intent = get_voice_intent(path, 
+              float(commandStart), float(commandEnd), float(serviceStart))
+        except:
+            print('Error', path)
 
         writer.writerow([device, command, intent])
     of.close()

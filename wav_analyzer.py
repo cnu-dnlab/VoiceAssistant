@@ -58,25 +58,36 @@ def parse_timing(filename, timing):
     result = dict()
     # get Category and command from filename
     filename = os.path.basename(filename)
+    device = filename.split('-')[0]
     category_command = filename.split('-')[1][:-4]
     category = category_command.split('_')[0]
     command = '_'.join(category_command.split('_')[1:])
     # []: a command which second sound is the response
-    response = 2
+    call_t = 0
+    command_t = 1
+    response_t = 1
+    if device == 'nugu':
+        command_t = command_t+1
+        response_t = response_t+1
+    elif device == 'siri':
+        command_t = command_t+1
+        response_t = response_t+1
+    elif device == 'vixvy':
+        response_t = response_t+1
     if category in ['music', 'news', 'skill']:
         if category == 'skill':
             for coms in ['TED', 'FEBC', 'PLUGIN', 'TED']:
                 if coms in command:
-                    response = 3
+                    response_t = response_t+1
                     break
         else:
-            response = 3
-    result = {'callStart': timing[0][0],
-              'callEnd': timing[0][1],
-              'commandStart': timing[1][0],
-              'commandEnd': timing[1][1],
-              'serviceStart': timing[response][0],
-              'serviceEnd': timing[response][1]}
+            response_t = response_t+1
+    result = {'callStart': timing[call_t][0],
+              'callEnd': timing[call_t][1],
+              'commandStart': timing[call_t+command_t][0],
+              'commandEnd': timing[call_t+command_t][1],
+              'serviceStart': timing[call_t+command_t+response_t][0],
+              'serviceEnd': timing[call_t+command_t+response_t][1]}
     return result
 
 
@@ -92,8 +103,8 @@ def main():
     os.makedirs(ARGS.wav_output, exist_ok=True)
     # check create or append
     mode = 'w'
-    if os.path.exists(ARGS.output):
-        mode = 'a'
+    #if os.path.exists(ARGS.output):
+    #    mode = 'a'
     # go something...
     with open(ARGS.output, mode) as f:
         # prepare output file
@@ -144,7 +155,7 @@ if __name__ == '__main__':
                         help='Buffer second for calculate z-score')
     parser.add_argument('-z', '--zscore',
                         type=float,
-                        default=4.0*2,
+                        default=4.0*1.5,
                         help='Z-Score threshold')
     parser.add_argument('-s', '--space',
                         type=float,

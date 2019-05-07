@@ -44,9 +44,11 @@ def main():
                                float(wav_data[device_command]['serviceEnd']))
         except KeyError:
             print('Invalid wav csv: {0}'.format(device_command))
+            break
             continue
         except ValueError:
             print('Invalid pcap: {0}'.format(path))
+            break
             continue
         print('Done: {0}'.format(output_path))
 
