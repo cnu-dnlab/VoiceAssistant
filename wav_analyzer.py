@@ -30,7 +30,11 @@ def binarization(data, fs):
     return values
 
 
-def get_timing(input_path):
+def get_timing(input_path, manual):
+    # check manual result
+    filename = os.path.basename(input_path)[:-4]
+    if filename in manual.keys():
+        return manual[filename]
     # prepare data: preprocessing
     # to easy understand
     # >>> np.argwhere([True, False, True, False, False])/10
@@ -98,13 +102,38 @@ def get_histogram(filename, cut_point, pad=1):
     return mono_data[:int((cut_point+pad)*fs):int(0.001*fs)]
 
 
+def get_manual_result(path):
+    manual = dict()
+    if path is None:
+        return manual
+    with open(path, 'r') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            device = row['device']
+            command = row['command']
+            callStart = row['callStart']
+            callEnd = row['callEnd']
+            commandStart = row['commandStart']
+            commandEnd = row['commandEnd']
+            serviceStart = row['serviceStart']
+            serviceEnd = row['serviceEnd']
+            key = '-'.join((device, command))
+            manual[key] = {'callStart': callStart,
+                           'callEnd': callEnd,
+                           'commandStart': commandStart,
+                           'commandEnd': commandEnd,
+                           'serviceStart': serviceStart,
+                           'serviceEnd': serviceEnd}
+    return manual
+
+
 def main():
     # create output directory
     os.makedirs(ARGS.wav_output, exist_ok=True)
     # check create or append
     mode = 'w'
-    #if os.path.exists(ARGS.output):
-    #    mode = 'a'
+    # get manually analyzed result
+    manual_timing = get_manual_result(ARGS.manual)
     # go something...
     with open(ARGS.output, mode) as f:
         # prepare output file
@@ -115,7 +144,7 @@ def main():
         for path in get_files(ARGS.input, ext='.wav'):
             print('Start: {0}'.format(path)) # for DEBUG
             try:
-                timing = get_timing(path)
+                timing = get_timing(path, manual_timing)
             except IndexError:
                 print('Too quite: {0}'.format(path))
                 continue
@@ -149,6 +178,9 @@ if __name__ == '__main__':
                         type=str,
                         required=True,
                         help='Output wav histogram directory')
+    parser.add_argument('-m', '--manual',
+                        type=str,
+                        help='Pre analyzed result, maybe manually')
     parser.add_argument('-b', '--buffer',
                         type=float,
                         default=1.0,
