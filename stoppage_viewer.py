@@ -13,13 +13,13 @@ def get_stoppage(path, sts=0, ets=float('inf')):
         reader = csv.DictReader(f)
         t1 = None
         t2 = None
-        stoppage = -1
+        stoppage = (-1, -1, -1)
         for row in reader:
             flag = row['flag']
             ts = float(row['time'])
             if flag == 'wav': # passing wav flag
                 continue
-            if ts < sts:: # passing ts
+            if ts < sts: # passing ts
                 continue
             elif ets < ts:
                 break
@@ -28,8 +28,8 @@ def get_stoppage(path, sts=0, ets=float('inf')):
             if t1 is None or t2 is None: # passing default value
                 continue
             tt_diff = t2-t1
-            if stoppage < tt_diff:
-                stoppage = tt_diff
+            if stoppage[0] < tt_diff:
+                stoppage = (tt_diff, t1, t2)
     return stoppage
 
 
@@ -53,7 +53,7 @@ def main():
 
     of = open(ARGS.output, 'w')
     writer = csv.writer(of)
-    writer.writerow(['device', 'command', 'stoppage'])
+    writer.writerow(['device', 'command', 'stoppage', 't1', 't2'])
     for path in get_files(ARGS.input, ext='.csv'):
         device_command = '.'.join((path.split('/')[-1]).split('.')[:-1])
         device, command = device_command.split('-')
@@ -65,7 +65,7 @@ def main():
 #        except:
 #            print('Error', path)
 
-        writer.writerow([device, command, stoppage])
+        writer.writerow([device, command, stoppage[0], stoppage[1], stoppage[2]])
     of.close()
 
 
