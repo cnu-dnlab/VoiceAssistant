@@ -1,9 +1,18 @@
+import os
 import csv
 from operator import itemgetter
 
 
 IP_PROTO = {'6': 'TCP',
             '17': 'UDP'}
+SPEAKERS = {'alexa': '192.168.1.118',
+            'clova': '192.168.1.186', 
+            'googlehome': '192.168.1.182', 
+            'kakao': '192.168.1.236', 
+            'nugu': '192.168.1.184',
+            'googleassistant': '192.168.1.214',
+            'vixby': '192.168.1.136',
+            'siri': '192.168.1.226'}
 
 
 class UpDownTiming(object):
@@ -16,17 +25,20 @@ class UpDownTiming(object):
         self.host_ip = self._get_host_ip()
 
     def _get_host_ip(self):
-        ip_counter = dict()
-        with open(self.csv_path, 'r') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                src_ip = row['ip.src']
-                dst_ip = row['ip.dst']
-                if src_ip.startswith('192'):
-                    ip_counter[src_ip] = ip_counter.get(src_ip, 0) + 1
-                if dst_ip.startswith('192'):
-                    ip_counter[dst_ip] = ip_counter.get(dst_ip, 0) + 1
-        return max(ip_counter.items(), key=itemgetter(1))[0]
+#        ip_counter = dict()
+#        with open(self.csv_path, 'r') as f:
+#            reader = csv.DictReader(f)
+#            for row in reader:
+#                src_ip = row['ip.src']
+#                dst_ip = row['ip.dst']
+#                if src_ip.startswith('192'):
+#                    ip_counter[src_ip] = ip_counter.get(src_ip, 0) + 1
+#                if dst_ip.startswith('192'):
+#                    ip_counter[dst_ip] = ip_counter.get(dst_ip, 0) + 1
+#        return max(ip_counter.items(), key=itemgetter(1))[0]
+        filename = os.path.basename(self.csv_path)
+        device = filename.split('-')[0]
+        return SPEAKERS[device]
 
     def get_updown_timing(self):
         if len(self.updown) > 0:

@@ -18,8 +18,8 @@ def get_wav_data(path):
                      'callEnd': row['callEnd'],
                      'commandStart': row['commandStart'],
                      'commandEnd': row['commandEnd'],
-                     'actionStart': row['actionStart'],
-                     'actionEnd': row['actionEnd']}
+                     'serviceStart': row['serviceStart'],
+                     'serviceEnd': row['serviceEnd']}
             data[key] = value
 
     return data
@@ -41,12 +41,14 @@ def main():
         output_path = get_output_path(path)
         try:
             export_pcap_updown(path, output_path, 
-                               float(wav_data[device_command]['actionEnd']))
+                               float(wav_data[device_command]['serviceEnd']))
         except KeyError:
             print('Invalid wav csv: {0}'.format(device_command))
+            break
             continue
         except ValueError:
             print('Invalid pcap: {0}'.format(path))
+            break
             continue
         print('Done: {0}'.format(output_path))
 
