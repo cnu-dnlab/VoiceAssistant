@@ -7,6 +7,13 @@ ARGS = None
 
 
 def main():
+    """Refactoring...
+    1. Find method to control tcpdump process on router
+         include send SIGINT to it
+    """
+
+
+"""
     pcap_process = subprocess.Popen('python3 ./src/vapm_collector_pcap.py -t {0} -r {1} -o {2}'.format(
         os.path.join(ARGS.tmp_dir, 'vapm.pcap'),
         ARGS.router_ip,
@@ -27,24 +34,28 @@ def main():
         pcap_process.send_signal(signal.SIGINT)
         recorder_process.send_signal(signal.SIGINT)
         camera_process.send_signal(signal.SIGINT)
+"""
 
 
 if __name__ == '__main__':
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    import argparse
+    ## chdir to file located directory 
+    #os.chdir(os.path.dirname(os.path.abspath(__file__)))
+"""    import argparse
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-t', '--tmp-dir',
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument('-t', '--tmp-dir',
                         help='tmp file directory',
                         type=str,
                         required=True)
-    parser.add_argument('-o', '--output',
+    arg_parser.add_argument('-o', '--output',
                         help='output file directory',
                         type=str,
                         required=True)
-    parser.add_argument('-r', '--router-ip',
+    arg_parser.add_argument('-r', '--router-ip',
                         help='ip address of home router',
                         type=str,
                         default='192.168.1.1')
     ARGS = parser.parse_args()
     main()
+"""
+
