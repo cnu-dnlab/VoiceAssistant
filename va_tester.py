@@ -108,36 +108,3 @@ if __name__ == '__main__':
     ARGS, _ = parser.parse_known_args()
     main(_)
 
-
-#    croot = os.path.abspath(os.path.expanduser(CONFIG['Collector']['Path']))
-#    cpcap = os.path.join(croot, 'vapm_collector_pcap.py')
-#    cmp4 = os.path.join(croot, 'vapm_collector_mp4.py')
-    
-    
-#    cmd = 'python3 {0} -t /tmp/vapm.pcap -r 192.168.1.1 -o ./ -e 192.168.1.127'.format(cpcap)
-#    pcap = subprocess.Popen(shlex.split(cmd))
-#    print(pcap)
-#    time.sleep(10)
-#    pcap.send_signal(signal.SIGINT)
-    
-    ## chdir to file located directory 
-    #os.chdir(os.path.dirname(os.path.abspath(__file__)))
-"""    import argparse
-
-    arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument('-t', '--tmp-dir',
-                        help='tmp file directory',
-                        type=str,
-                        required=True)
-    arg_parser.add_argument('-o', '--output',
-                        help='output file directory',
-                        type=str,
-                        required=True)
-    arg_parser.add_argument('-r', '--router-ip',
-                        help='ip address of home router',
-                        type=str,
-                        default='192.168.1.1')
-    ARGS = parser.parse_args()
-    main()
-"""
-
