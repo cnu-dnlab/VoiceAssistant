@@ -1,0 +1,4 @@
+device_call,dev
+sleep_for,1
+command_call,cpath
+sleep_for,10

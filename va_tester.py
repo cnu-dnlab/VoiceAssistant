@@ -1,14 +1,54 @@
+import csv
 import os
 import subprocess
 import shlex
 import time
 import signal
 
+from scenario_func import get_scenario, play_scenario
+
 ARGS = None
 CONFIG = None
 
 
-def main():
+def parse_input(path):
+    with open(path, 'r') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            yield row['dev'], row['cat'], row['com'], row['sce']
+
+
+def main(_):
+    # set collector path
+    croot = os.path.abspath(os.path.expanduser(CONFIG['Collector']['Path']))
+    cpcap = os.path.join(croot, 'vapm_collector_pcap.py')
+    cmp4 = os.path.join(croot, 'vapm_collector_mp4.py')
+
+    # get scenario path
+    sroot = os.path.abspath(os.path.expanduser(CONFIG['Scenario']['Path']))
+
+    # get command path
+    mroot = os.path.abspath(os.path.expanduser(CONFIG['Command']['Path']))
+
+    # setting output directory
+    odir = os.path.abspath(os.path.expanduser(ARGS.output))
+    os.makedirs(odir, mode=0o755, exist_ok=True)
+
+    # loop
+    ## setting input file
+    icsv = os.path.abspath(os.path.expanduser(ARGS.input))
+    for dev, cat, com, sce in parse_input(icsv):
+        ## Start collector
+
+        ## Play scenario
+        cpath = '-'.join([dev, cat, com])
+        data = {'dev': dev, 'cat': cat, 'com': com, 
+                'mroot': mroot, 'cpath': cpath}
+        scene = get_scenario(sroot, sce)
+        play_scenario(scene, data)
+
+        ## Stop collector and archive data
+
     """Refactoring...
     1. Find method to control tcpdump process on router
          include send SIGINT to it
@@ -45,14 +85,35 @@ if __name__ == '__main__':
     CONFIG = configparser.ConfigParser()
     CONFIG.read('config.ini')
 
-    croot = os.path.abspath(os.path.expanduser(CONFIG['Collector']['Path']))
-    cpcap = os.path.join(croot, 'vapm_collector_pcap.py')
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--input', type=str,
+                        help='input command csv',
+                        required=True)
+    parser.add_argument('-o', '--output', type=str,
+                        help='output file directory',
+                        required=True)
+    parser.add_argument('-s', '--scenario', type=str,
+                        help='scenario file directory',
+                        default='./scenario')
+    parser.add_argument('-r', '--router-ip', type=str,
+                        help='ip address of home router',
+                        default='192.168.1.1')
+
+    ARGS, _ = parser.parse_known_args()
+    main(_)
+
+
+#    croot = os.path.abspath(os.path.expanduser(CONFIG['Collector']['Path']))
+#    cpcap = os.path.join(croot, 'vapm_collector_pcap.py')
+#    cmp4 = os.path.join(croot, 'vapm_collector_mp4.py')
     
-    cmd = 'python3 {0} -t /tmp/vapm.pcap -r 192.168.1.1 -o ./ -e 192.168.1.127'.format(cpcap)
-    pcap = subprocess.Popen(shlex.split(cmd))
-    print(pcap)
-    time.sleep(10)
-    pcap.send_signal(signal.SIGINT)
+    
+#    cmd = 'python3 {0} -t /tmp/vapm.pcap -r 192.168.1.1 -o ./ -e 192.168.1.127'.format(cpcap)
+#    pcap = subprocess.Popen(shlex.split(cmd))
+#    print(pcap)
+#    time.sleep(10)
+#    pcap.send_signal(signal.SIGINT)
     
     ## chdir to file located directory 
     #os.chdir(os.path.dirname(os.path.abspath(__file__)))
