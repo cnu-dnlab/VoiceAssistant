@@ -1,9 +1,11 @@
 import os
 import subprocess
+import shlex
 import time
 import signal
 
 ARGS = None
+CONFIG = None
 
 
 def main():
@@ -38,6 +40,20 @@ def main():
 
 
 if __name__ == '__main__':
+    import configparser
+
+    CONFIG = configparser.ConfigParser()
+    CONFIG.read('config.ini')
+
+    croot = os.path.abspath(os.path.expanduser(CONFIG['Collector']['Path']))
+    cpcap = os.path.join(croot, 'vapm_collector_pcap.py')
+    
+    cmd = 'python3 {0} -t /tmp/vapm.pcap -r 192.168.1.1 -o ./ -e 192.168.1.127'.format(cpcap)
+    pcap = subprocess.Popen(shlex.split(cmd))
+    print(pcap)
+    time.sleep(10)
+    pcap.send_signal(signal.SIGINT)
+    
     ## chdir to file located directory 
     #os.chdir(os.path.dirname(os.path.abspath(__file__)))
 """    import argparse

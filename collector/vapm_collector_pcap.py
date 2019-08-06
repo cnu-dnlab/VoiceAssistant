@@ -1,4 +1,5 @@
 import subprocess
+import shlex
 
 from vapm_collector_interface import VAPMInterface
 
@@ -44,6 +45,6 @@ if __name__ == '__main__':
     ARGS = parser.parse_args()
                         
     vapm_pcap = VAPMCollectorPcap(ARGS.tmp_path, 
-                                  ARGS.router_ip, ARGS.host_ip)
+                                  ARGS.router_ip, ARGS.exclude_ip)
     vapm_pcap.start_collect(ARGS.output)
 
