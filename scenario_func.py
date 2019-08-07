@@ -17,7 +17,10 @@ def sleep_for(data):
 
 
 def command_call(data):
-    cc = '-'.join([data['cat'], data['com']])
+    if data['arg'] == 'cpath':
+        cc = '-'.join([data['cat'], data['com']])
+    else:
+        cc = data['arg']
     ccname = '{0}.mp3'.format(cc)
     ccpath = os.path.join(data['mroot'], ccname)
     cmd = 'mpv --loop-playlist=no --keep-open=no {0}'.format(ccpath)
