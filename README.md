@@ -11,6 +11,8 @@
 - R
 
 ## Version history
+- 190816: 1.1
+  - Upgrade VA test program
 - 190216: 1.0
   - First release version!
 
